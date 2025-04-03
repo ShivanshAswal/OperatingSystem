@@ -1,0 +1,61 @@
+#include <stdio.h>
+
+#define MAX_PROCESSES 10
+#define MAX_NAMELENGTH 20
+
+typedef struct {
+    int pid;
+    char name[MAX_NAMELENGTH];
+    int BT;
+} Process;
+
+
+void FCFS(Process queue[], int n);
+void input_processes(Process queue[], int *n);
+
+void FCFS(Process queue[], int n) {
+    int totalWT = 0, totalTAT = 0;
+    printf("PID\tName\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    int time = 0;
+
+    for (int i = 0; i < n; i++) {
+        int TAT = queue[i].BT + time;
+        printf("%d\t%s\t%d\t\t%d\t\t%d\n", queue[i].pid, queue[i].name, queue[i].BT, time, TAT);
+        totalWT += time;
+        totalTAT += TAT;
+        time += queue[i].BT;
+    }
+    printf("\nAverage Waiting Time: %.2f\n", (float)totalWT / n);
+    printf("Average Turnaround Time: %.2f\n", (float)totalTAT / n);
+}
+
+void input_processes(Process queue[], int *n) {
+    printf("Enter the number of processes: ");
+    scanf("%d", n);
+
+    for (int i = 0; i < *n; i++) {
+        queue[i].pid = i + 1;
+        printf("Enter the name of process %d: ", i + 1);
+        scanf("%s", queue[i].name);
+        printf("Enter the Burst Time of process %d: ", i + 1);
+        scanf("%d", &queue[i].BT);
+    }
+}
+
+int main() {
+    Process sysQ[MAX_PROCESSES], userQ[MAX_PROCESSES];
+    int systemCount, userCount;
+
+    printf("Enter details of system processes:\n");
+    input_processes(sysQ, &systemCount);
+
+    printf("Enter details of user processes:\n");
+    input_processes(userQ, &userCount);
+
+    printf("\nScheduling System Processes:\n");
+    FCFS(sysQ, systemCount);
+    printf("\nScheduling User Processes:\n");
+    FCFS(userQ, userCount);
+
+    return 0;
+}
