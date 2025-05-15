@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int pid;
+    int execution_time;
+    int weight;
+    int remaining_time;
+} task;
+
+void proportionalScheduling(task tasks[], int n) {
+    int total_execution_time = 0;
+    for (int i = 0; i < n; i++) {
+        total_execution_time += tasks[i].execution_time;
+    }
+
+    int time = 0;
+    while (1) {
+        int done = 1;
+        for (int i = 0; i < n; i++) {
+            if (tasks[i].remaining_time > 0) {
+                done = 0;
+                int time_slice = (tasks[i].execution_time * 100) / total_execution_time; 
+                tasks[i].remaining_time -= time_slice;
+                printf("At time %d, Task %d starts execution\n", time, tasks[i].pid);
+                time += time_slice;
+                if (tasks[i].remaining_time <= 0) {
+                    printf("Task %d completed at time %d\n", tasks[i].pid, time);
+                }
+            }
+        }
+        if (done) break;
+    }
+}
+
+int main() {
+    int n;
+    printf("Enter number of tasks: ");
+    scanf("%d", &n);
+
+    task tasks[n];
+    for (int i = 0; i < n; i++) {
+        printf("Enter PID and Execution Time for task %d: ", i + 1);
+        scanf("%d %d", &tasks[i].pid, &tasks[i].execution_time);
+        tasks[i].remaining_time = tasks[i].execution_time;
+        tasks[i].weight = tasks[i].execution_time; // In this case, weight is same as execution time
+    }
+
+    proportionalScheduling(tasks, n);
+
+    return 0;
+}
