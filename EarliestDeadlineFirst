@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int pid;
+    int period;
+    int execution_time;
+    int remaining_time;
+    int deadline;
+} task;
+
+int compare(const void *a, const void *b) {
+    return ((task *)a)->deadline - ((task *)b)->deadline;
+}
+
+void earliestDeadlineFirstScheduling(task tasks[], int n) {
+    int time = 0;
+    int completed = 0;
+
+    while (completed < n) {
+        int idx = -1;
+        for (int i = 0; i < n; i++) {
+            if (tasks[i].remaining_time > 0 && (idx == -1 || tasks[i].deadline < tasks[idx].deadline)) {
+                idx = i;
+            }
+        }
+
+        if (idx != -1) {
+            printf("At time %d, Task %d starts execution\n", time, tasks[idx].pid);
+            tasks[idx].remaining_time--;
+            if (tasks[idx].remaining_time == 0) {
+                completed++;
+                printf("Task %d completed at time %d\n", tasks[idx].pid, time + 1);
+            }
+        }
+
+        time++;
+        for (int i = 0; i < n; i++) {
+            if (time % tasks[i].period == 0) {
+                tasks[i].remaining_time = tasks[i].execution_time;
+                tasks[i].deadline = time + tasks[i].period;
+            }
+        }
+    }
+}
+
+int main() {
+    int n;
+    printf("Enter number of tasks: ");
+    scanf("%d", &n);
+
+    task tasks[n];
+    for (int i = 0; i < n; i++) {
+        printf("Enter PID, Period, and Execution Time for task %d: ", i + 1);
+        scanf("%d %d %d", &tasks[i].pid, &tasks[i].period, &tasks[i].execution_time);
+        tasks[i].remaining_time = tasks[i].execution_time;
+        tasks[i].deadline = tasks[i].period;
+    }
+
+    earliestDeadlineFirstScheduling(tasks, n);
+
+    return 0;
+}
